@@ -116,6 +116,7 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
 
+
 	# set default room
 	# set default room
 	listen_for /(?:(?:[Ii]'m in)|(?:[Ii] am in)|(?:[Uu]se)|(?:[Cc]ontrol)) the (.*)/i do |roomname|
@@ -128,7 +129,9 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		end
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
-	
+
+
+	#update library
         listen_for /^update my library/i do 
 		if (@xbmc.connect(@active_room))
 			@xbmc.update_library
@@ -136,11 +139,6 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
 	
-         listen_for /test movies/i do
-         movies = @xbmc.show_movies
-         print movies
-         request_completed #always complete your request! Otherwise the phone will "spin" at the user!
-          end
   
 	#play movie or episode
 	listen_for /watch (.+?)(?: in the (.*))?$/i do |title,roomname|
