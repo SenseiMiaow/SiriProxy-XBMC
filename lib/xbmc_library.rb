@@ -6,24 +6,24 @@ class XBMCLibrary
   class UnauthorizedError < StandardError; end;
   
   include HTTParty
-
+  
   def initialize(serverlist, appname)
     @xbmc = serverlist
     @appname = appname
   end
-
+  
   def set_xbmc_config(location="default")
     if (!@xbmc.has_key?(location) || !@xbmc[location].has_key?("host") || !@xbmc[location]["host"] == "")
       puts "[#{@appname}] No host configured for #{location}."
       return false
     end
-
+    
     self.class.base_uri "http://#{@xbmc[location]["host"]}:#{@xbmc[location]["port"]}"
     self.class.basic_auth @xbmc[location]["username"], @xbmc[location]["password"]
-
+    
     return true
   end
-
+  
   # API interaction: Invokes the given method with given params, parses the JSON response body, maps it to
   # a HashWithIndifferentAccess and returns the :result subcollection
   def xbmc(method, params={})
@@ -41,12 +41,11 @@ class XBMCLibrary
     rescue Errno::ECONNREFUSED, SocketError, HTTParty::UnsupportedURIScheme => err
     raise err.class, err.message + ". Did you configure the url and port for XBMC properly using Xbmc.base_uri 'http://localhost:1234'?"
   end
-
+  
   def test()
     return xbmc('VideoLibrary.GetRecentlyAddedMovies')
   end
-
-
+  
   def connect(location)
     puts "[#{@appname}] Connecting to the XBMC interface (#{location})"
     $apiLoaded = false
@@ -67,7 +66,7 @@ class XBMCLibrary
     end
     return $apiLoaded
   end
-
+  
   def get_video_player()
     puts "[#{@appname}] Get active video player (API version #{$apiVersion["version"]})"
     result = ""
@@ -84,7 +83,7 @@ class XBMCLibrary
     end
     return result
   end
-
+  
   def find_movie(title)
     puts "[#{@appname}] Finding movie (API version #{$apiVersion["version"]})"
     result = ""
@@ -95,16 +94,14 @@ class XBMCLibrary
       movies = xbmc('VideoLibrary.GetMovies', { :properties => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed"] })["movies"]
     end
     movies.each { |movie|
-
       movietitle = movie["label"].downcase.gsub(/[^0-9A-Za-z]/, '')
-
       if movietitle.match(title)
         return movie
       end
     }
     return result
   end
-
+  
   def find_show(title)
     puts "[#{@appname}] Finding #{title} (API version #{$apiVersion["version"]})"
     result = ""
@@ -115,9 +112,7 @@ class XBMCLibrary
       tvshows = xbmc('VideoLibrary.GetTVShows')["tvshows"]
     end
     tvshows.each { |tvshow|
-
       tvshowtitle = tvshow["label"].downcase.gsub(/[^0-9A-Za-z]/, '')
-
       if tvshowtitle.match(title)
         return tvshow
       end
@@ -128,59 +123,59 @@ class XBMCLibrary
   def find_first_unwatched_episode(tvshowid)
     puts "[#{@appname}] Looking up first unwatched episode (API version #{$apiVersion["version"]})"
     result = ""
-	if ($apiVersion["version"] == 2)
+    if ($apiVersion["version"] == 2)
       episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :fields => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file"] } )["episodes"]
-	else  
+    else  
       episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :properties => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file"] } )["episodes"]
     end
     episodes.each { |episode|
-
       if (episode["playcount"] == 0)
         return episode
       end         
     }
-        return result
+    return result
   end
-
-	def play_season(tvshowid, season_number)
-		puts "[#{@appname}] Looking up the path for season #{season_number} of #{tvshowid} (API version #{$apiVersion["version"]})"
-		result = ""
-		if ($apiVersion["version"] == 2)
-			season_path = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :fields => ["file"] } )['episodes']
-			if season_path
-				season_path = season_path.first['file'].split('/')
-				season_path.pop
-				season_path = season_path.join('/')
-			else
-				raise "You don't have that Season"
-			end
-		else  
-		  season_path = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :properties => ["file"] } )['episodes']
-			if season_path
-				season_path = season_path.first['file'].split('/')
-				season_path.pop
-				season_path = season_path.join('/')
-			else
-				raise "You don't have that Season"
-			end
-		end
-
-		puts "[#{@appname}] Generating Playlist (API version #{$apiVersion["version"]})"
+  
+  def play_season(tvshowid, season_number)
+    puts "[#{@appname}] Looking up the path for season #{season_number} of #{tvshowid} (API version #{$apiVersion["version"]})"
+    result = ""
+    
+    if ($apiVersion["version"] == 2)
+      season_path = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :fields => ["file"] } )['episodes']
+      if season_path
+        season_path = season_path.first['file'].split('/')
+        season_path.pop
+        season_path = season_path.join('/')
+      else
+        raise "You don't have that Season"
+      end
+    else
+      season_path = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :properties => ["file"] } )['episodes']
+      if season_path
+        season_path = season_path.first['file'].split('/')
+        season_path.pop
+        season_path = season_path.join('/')
+      else
+        raise "You don't have that Season"
+      end
+    end
+    
+    puts "[#{@appname}] Generating Playlist (API version #{$apiVersion["version"]})"
     begin
       if ($apiVersion["version"] == 2)
         xbmc('VideoPlaylist.Clear')
         xbmc('VideoPlaylist.Add', season_path)
         xbmc('VideoPlaylist.Play')
       else
-				xbmc('Playlist.Clear', {:playlistid => 1})
-				xbmc('Playlist.Add', {:playlistid => 1, :item => {:directory => season_path}})
+        xbmc('Playlist.Clear', {:playlistid => 1})
+        xbmc('Playlist.Add', {:playlistid => 1, :item => {:directory => season_path}})
         xbmc('Player.Open', { :item => {:playlistid => 1}})
       end
     rescue
       puts "[#{@appname}] An error occurred: #{$!}"
     end
-	end
-
+  end
+  
   def play(file)
     puts "[#{@appname}] Playing file (API version #{$apiVersion["version"]})"
     begin
@@ -196,8 +191,7 @@ class XBMCLibrary
       puts "[#{@appname}] An error occurred: #{$!}"
     end
   end
-
-
+  
   def stop()
     player = get_video_player()
     if (player != "")
@@ -211,7 +205,7 @@ class XBMCLibrary
     end
     return false
   end
-
+  
   def pause()
     player = get_video_player()
     if (player != "")
@@ -227,15 +221,15 @@ class XBMCLibrary
   end
   
   def update_library
-  xbmc('VideoLibrary.Scan')
-  return true
+    xbmc('VideoLibrary.Scan')
+    return true
   end
   
   def find_episode(tvshowid, season_number, episode_number)
     result = ""
-	if ($apiVersion["version"] == 2)
+    if ($apiVersion["version"] == 2)
       episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :fields => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file"] } )["episodes"]
-	else  
+    else  
       episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :properties => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file"] } )["episodes"]
     end
     
@@ -246,16 +240,30 @@ class XBMCLibrary
         return episod
       end         
     }
-        return result
+    return result
   end
   
- def show_movies
+  def show_movies
     result = "" 
     movies = xbmc('VideoLibrary.GetRecentlyAddedMovies', { :limits => 10, :properties => ["title", "rating"] } )["movies"]   
     return movies
     return result
   end
   
+  def get_recently_added_episodes()
+    return xbmc('VideoLibrary.GetRecentlyAddedEpisodes')
+  end
+  
+  def get_recently_added_movies()
+    return xbmc('VideoLibrary.GetRecentlyAddedMovies')
+  end
+  
+  def get_tv_shows()
+    return xbmc('VideoLibrary.GetTVShows')
+  end
+  
+  def get_episode(id)
+    return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :properties => ['tvshowid'] })
+  end
   
 end
-
