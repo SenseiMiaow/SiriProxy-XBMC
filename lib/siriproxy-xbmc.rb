@@ -252,7 +252,7 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 				numberized_title = Chronic::Numerizer.numerize(title)
 				season_check = numberized_title.match('season \d+')
 				if season_check
-					season = season_check[0].match('\d+')
+					season = season_check[0].match('\d+')[0].to_i
 					episode_check = numberized_title.match('episode \d+')
 					if episode_check
 						episode = episode_check[0].match('\d+')
