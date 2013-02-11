@@ -191,12 +191,11 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 				if (movie == "")
 					say "Title not found, please try again"
 				else
+					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
 					
 					#Now playing Movie with Thumbnail
 					encImgUrl = CGI.escape(movie["thumbnail"])
 					imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
-					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
-					    # send a "Preview" of the Tweet
 					    object = SiriAddViews.new
 					    object.make_root(last_ref_id)
 					    answer = SiriAnswer.new("\"#{movie["title"]} (#{movie["year"]})\"", [
@@ -204,10 +203,10 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 					    ])
 					    object.views << SiriAnswerSnippet.new([answer])
 					    send_object object
-					
+						
 					@xbmc.play(movie["file"])
 				end
-			else
+			else  
 				numberized_title = Chronic::Numerizer.numerize(title)
 				season_check = numberized_title.match('season \d+')
 				if season_check
@@ -216,12 +215,25 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 					if episode_check
 						episode = episode_check[0].match('\d+')
 						episod = @xbmc.find_episode(tvshow["tvshowid"], season, episode)
+						
 						say "Now playing \"#{episod["title"]}\" (#{episod["showtitle"]}, Season #{episod["season"]}, Episode #{episod["episode"]})", spoken: "Now playing \"#{episod["title"]}\""
+						
+						#Now playing Episode with Thumbnail
+						encImgUrl = CGI.escape(episod["thumbnail"])
+						imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
+							object = SiriAddViews.new
+							object.make_root(last_ref_id)
+							answer = SiriAnswer.new("\"#{episod["title"]}\" (#{episod["showtitle"]}, Season #{episod["season"]}, Episode #{episod["episode"]})\"", [
+							  SiriAnswerLine.new('logo', imgUrl)
+							])
+							object.views << SiriAnswerSnippet.new([answer])
+							send_object object
+						
 						@xbmc.play(episod["file"])
 						#search for spefic episode
 					else
 						#search for entire season 
-						tvshow = @xbmc.play_season(tvshow["tvshowid"], season)	
+						tvshow = @xbmc.play_season(tvshow["tvshowid"], season)
 					end
 				else
 					episode = @xbmc.find_first_unwatched_episode(tvshow["tvshowid"])
@@ -229,12 +241,24 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 						say "No unwatched episode found for the \"#{tvshow["label"]}\""
 					else    
 						say "Now playing \"#{episode["title"]}\" (#{episode["showtitle"]}, Season #{episode["season"]}, Episode #{episode["episode"]})", spoken: "Now playing \"#{episode["title"]}\""
+						
+						#Now playing Episode with Thumbnail
+						encImgUrl = CGI.escape(episode["thumbnail"])
+						imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
+							object = SiriAddViews.new
+							object.make_root(last_ref_id)
+							answer = SiriAnswer.new("\"#{episode["title"]}\" (#{episode["showtitle"]}, Season #{episode["season"]}, Episode #{episode["episode"]})\"", [
+							  SiriAnswerLine.new('logo', imgUrl)
+							])
+							object.views << SiriAnswerSnippet.new([answer])
+							send_object object
+						
 						@xbmc.play(episode["file"])
 					end
 				end
 			end
 		else 
-		  say "The XBMC interface is unavailable, please check the plugin configuration or check if XBMC is running"
+			say "The XBMC interface is unavailable, please check the plugin configuration or check if XBMC is running"
 		end
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
@@ -259,12 +283,11 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 				if (movie == "")
 					say "Title not found, please try again"
 				else
+					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
 					
 					#Now playing Movie with Thumbnail
 					encImgUrl = CGI.escape(movie["thumbnail"])
 					imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
-					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
-					    # send a "Preview" of the Tweet
 					    object = SiriAddViews.new
 					    object.make_root(last_ref_id)
 					    answer = SiriAnswer.new("\"#{movie["title"]} (#{movie["year"]})\"", [
@@ -284,12 +307,25 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 					if episode_check
 						episode = episode_check[0].match('\d+')
 						episod = @xbmc.find_episode(tvshow["tvshowid"], season, episode)
+						
 						say "Now playing \"#{episod["title"]}\" (#{episod["showtitle"]}, Season #{episod["season"]}, Episode #{episod["episode"]})", spoken: "Now playing \"#{episod["title"]}\""
+						
+						#Now playing Episode with Thumbnail
+						encImgUrl = CGI.escape(episod["thumbnail"])
+						imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
+							object = SiriAddViews.new
+							object.make_root(last_ref_id)
+							answer = SiriAnswer.new("\"#{episod["title"]}\" (#{episod["showtitle"]}, Season #{episod["season"]}, Episode #{episod["episode"]})\"", [
+							  SiriAnswerLine.new('logo', imgUrl)
+							])
+							object.views << SiriAnswerSnippet.new([answer])
+							send_object object
+						
 						@xbmc.play(episod["file"])
 						#search for spefic episode
 					else
 						#search for entire season 
-						tvshow = @xbmc.play_season(tvshow["tvshowid"], season)	
+						tvshow = @xbmc.play_season(tvshow["tvshowid"], season)
 					end
 				else
 					episode = @xbmc.find_first_unwatched_episode(tvshow["tvshowid"])
@@ -297,6 +333,18 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 						say "No unwatched episode found for the \"#{tvshow["label"]}\""
 					else    
 						say "Now playing \"#{episode["title"]}\" (#{episode["showtitle"]}, Season #{episode["season"]}, Episode #{episode["episode"]})", spoken: "Now playing \"#{episode["title"]}\""
+						
+						#Now playing Episode with Thumbnail
+						encImgUrl = CGI.escape(episode["thumbnail"])
+						imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
+							object = SiriAddViews.new
+							object.make_root(last_ref_id)
+							answer = SiriAnswer.new("\"#{episode["title"]}\" (#{episode["showtitle"]}, Season #{episode["season"]}, Episode #{episode["episode"]})\"", [
+							  SiriAnswerLine.new('logo', imgUrl)
+							])
+							object.views << SiriAnswerSnippet.new([answer])
+							send_object object
+						
 						@xbmc.play(episode["file"])
 					end
 				end
