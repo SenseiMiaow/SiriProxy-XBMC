@@ -251,22 +251,19 @@ class XBMCLibrary
   end
   
   def get_recently_added_episodes()
-    return xbmc('VideoLibrary.GetRecentlyAddedEpisodes', { :limits => 10, :properties => ["title", "rating", "thumbnail", "fanart"] } )
+    return xbmc('VideoLibrary.GetRecentlyAddedEpisodes')
   end
   
   def get_recently_added_movies()
-    result = "" 
-    movies = xbmc('VideoLibrary.GetRecentlyAddedMovies')["movies"]
-    return movies
-    return result
+    return xbmc('VideoLibrary.GetRecentlyAddedMovies')
   end
   
   def get_tv_shows()
-    return xbmc('VideoLibrary.GetTVShows', { :limits => 10, :properties => ["title", "rating", "thumbnail", "fanart"] } )
+    return xbmc('VideoLibrary.GetTVShows')
   end
   
   def get_episode(id)
-    return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :properties => ['tvshowid', 'thumbnail', 'fanart'] })
+    return xbmc('VideoLibrary.GetEpisodeDetails')
   end
   
 end
