@@ -255,7 +255,10 @@ class XBMCLibrary
   end
   
   def get_recently_added_movies()
-    return xbmc('VideoLibrary.GetRecentlyAddedMovies', { :limits => 10, :properties => ["title", "year", "rating", "thumbnail", "fanart"] } )
+    result = "" 
+    movies = xbmc('VideoLibrary.GetRecentlyAddedMovies')["movies"]
+    return movies
+    return result
   end
   
   def get_tv_shows()

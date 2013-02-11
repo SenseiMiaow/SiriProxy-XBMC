@@ -146,7 +146,7 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
             data = @xbmc.get_recently_added_movies()
             
             list = ""
-            data["movies"].each { |movie| list = list + movie["label"] +"("+ movie["year"] +")"+ "\n" }
+            data["movies"].each { |movie| list = list + movie["label"] + "\n" }
             say list, spoken: "Here are your recently added movies"
           end
           request_completed #always complete your request! Otherwise the phone will "spin" at the user!
