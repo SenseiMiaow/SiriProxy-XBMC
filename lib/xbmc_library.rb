@@ -263,7 +263,7 @@ class XBMCLibrary
   end
   
   def get_episode(id)
-    return xbmc('VideoLibrary.GetEpisodeDetails')
+    return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :properties => ['tvshowid'] })
   end
   
 end
