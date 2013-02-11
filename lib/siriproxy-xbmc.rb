@@ -193,7 +193,7 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
 					@xbmc.play(movie["file"])
 				end
-			else  
+			else
 				numberized_title = Chronic::Numerizer.numerize(title)
 				season_check = numberized_title.match('season \d+')
 				if season_check
@@ -220,7 +220,7 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 				end
 			end
 		else 
-			say "The XBMC interface is unavailable, please check the plugin configuration or check if XBMC is running"
+		  say "The XBMC interface is unavailable, please check the plugin configuration or check if XBMC is running"
 		end
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
@@ -246,6 +246,20 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 					say "Title not found, please try again"
 				else
 					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
+					
+					
+					pugUrl = HTTParty.get("http://pugme.herokuapp.com/random").parsed_response['pug']
+					
+					    # send a "Preview" of the Tweet
+					    object = SiriAddViews.new
+					    object.make_root(last_ref_id)
+					    answer = SiriAnswer.new("Pugme", [
+					      SiriAnswerLine.new('logo',pugUrl)
+					    ])
+					    object.views << SiriAnswerSnippet.new([answer])
+					    send_object object					
+					
+					
 					@xbmc.play(movie["file"])
 				end
 			else  
