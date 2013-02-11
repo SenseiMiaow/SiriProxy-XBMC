@@ -18,7 +18,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'uri'
 require 'cgi'
 require 'cora'
 require 'siri_objects'
@@ -33,12 +32,12 @@ require 'chronic'
 class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 	def initialize(config)
 		appname = "SiriProxy-XBMC"
-		host = config["xbmc_host"]
-		port = config["xbmc_port"]
+		@host = config["xbmc_host"]
+		@port = config["xbmc_port"]
 		username = config["xbmc_username"]
 		password = config["xbmc_password"]
 
-		@roomlist = Hash["default" => Hash["host" => host, "port" => port, "username" => username, "password" => password]]
+		@roomlist = Hash["default" => Hash["host" => @host, "port" => @port, "username" => username, "password" => password]]
 
 		rooms = File.expand_path('~/.siriproxy/xbmc_rooms.yml')
 		if (File::exists?( rooms ))
@@ -249,18 +248,16 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 				else
 					
 					encImgUrl = CGI.escape(movie["thumbnail"])
-					say "Now playing \"#{movie["thumbnail"]}\"", spoken: "Now playing \"#{movie["title"]}\""
-					imgUrl = "http://192.168.0.182:8080/image/".encImgUrl
-					say imgUrl
-					
-					#    # send a "Preview" of the Tweet
-					#    object = SiriAddViews.new
-					#    object.make_root(last_ref_id)
-					#    answer = SiriAnswer.new("Now playing \"#{movie["thumbnail"]}\"", [
-					#      SiriAnswerLine.new('logo', imgUrl)
-					#    ])
-					#    object.views << SiriAnswerSnippet.new([answer])
-					#    send_object object
+					imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
+					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
+					    # send a "Preview" of the Tweet
+					    object = SiriAddViews.new
+					    object.make_root(last_ref_id)
+					    answer = SiriAnswer.new("\"#{movie["title"]}\"", [
+					      SiriAnswerLine.new('logo', imgUrl)
+					    ])
+					    object.views << SiriAnswerSnippet.new([answer])
+					    send_object object
 						
 					@xbmc.play(movie["file"])
 				end
