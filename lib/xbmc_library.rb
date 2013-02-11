@@ -243,13 +243,6 @@ class XBMCLibrary
     return result
   end
   
-  def show_movies
-    result = "" 
-    movies = xbmc('VideoLibrary.GetRecentlyAddedMovies', { :limits => 10, :properties => ["title", "year", "rating", "thumbnail", "fanart"] } )["movies"]
-    return movies
-    return result
-  end
-  
   def get_recently_added_episodes()
     return xbmc('VideoLibrary.GetRecentlyAddedEpisodes')
   end
@@ -263,7 +256,19 @@ class XBMCLibrary
   end
   
   def get_episode(id)
-    return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :properties => ['tvshowid'] })
+    if ($apiVersion["version"] == 2)
+		return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :fields => ['tvshowid'] })
+	else
+		return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :properties => ['tvshowid'] })
+	end
+  end
+  
+  def get_movie(id)
+    if ($apiVersion["version"] == 2)
+      return xbmc('VideoLibrary.GetMovies', { :movieid => id, :fields => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed", "thumbnail", "fanart"] })
+    else
+      return xbmc('VideoLibrary.GetMovies', { :movieid => id, :properties => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed", "thumbnail", "fanart"] })
+    end
   end
   
 end
