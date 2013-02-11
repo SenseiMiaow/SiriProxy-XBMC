@@ -18,6 +18,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require 'uri'
+require 'cgi'
 require 'cora'
 require 'siri_objects'
 require 'xbmc_library'
@@ -245,19 +247,21 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 				if (movie == "")
 					say "Title not found, please try again"
 				else
-					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
 					
-					
-					pugUrl = HTTParty.get("http://pugme.herokuapp.com/random").parsed_response['pug']
+					say "Now playing \"#{movie["thumbnail"]}\""
+					encImgUrl = CGI.escape(movie["thumbnail"])
+					imgUrl = "http://192.168.0.182:8080/image/\"#{encImgUrl}\""
 					
 					    # send a "Preview" of the Tweet
 					    object = SiriAddViews.new
 					    object.make_root(last_ref_id)
-					    answer = SiriAnswer.new("Pugme", [
-					      SiriAnswerLine.new('logo',pugUrl)
+					    answer = SiriAnswer.new("Now playing \"#{movie["thumbnail"]}\"", [
+					      SiriAnswerLine.new('logo', imgUrl)
 					    ])
 					    object.views << SiriAnswerSnippet.new([answer])
-					    send_object object					
+					    send_object object
+					
+					spoken: "Now playing \"#{movie["title"]}\""
 					
 					
 					@xbmc.play(movie["file"])
