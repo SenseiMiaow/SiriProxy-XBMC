@@ -255,7 +255,7 @@ class XBMCLibrary
   end
   
   def get_recently_added_movies()
-    return xbmc('VideoLibrary.GetRecentlyAddedMovies')
+	return xbmc('VideoLibrary.GetRecentlyAddedMovies')
   end
   
   def get_tv_shows()
