@@ -153,7 +153,7 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
         end
 
         # recently added episodes
-        listen_for /recent.*tv/i do 
+        listen_for /recent.*episodes/i do 
           if (@xbmc.connect(@active_room))
             data = @xbmc.get_recently_added_episodes()
             shows = {}
