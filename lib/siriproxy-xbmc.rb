@@ -191,7 +191,20 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 				if (movie == "")
 					say "Title not found, please try again"
 				else
+					
+					#Now playing Movie with Thumbnail
+					encImgUrl = CGI.escape(movie["thumbnail"])
+					imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
 					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
+					    # send a "Preview" of the Tweet
+					    object = SiriAddViews.new
+					    object.make_root(last_ref_id)
+					    answer = SiriAnswer.new("\"#{movie["title"]}\"", [
+					      SiriAnswerLine.new('logo', imgUrl)
+					    ])
+					    object.views << SiriAnswerSnippet.new([answer])
+					    send_object object
+					
 					@xbmc.play(movie["file"])
 				end
 			else
@@ -247,6 +260,7 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 					say "Title not found, please try again"
 				else
 					
+					#Now playing Movie with Thumbnail
 					encImgUrl = CGI.escape(movie["thumbnail"])
 					imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
 					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
