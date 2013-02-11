@@ -146,7 +146,7 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
             data = @xbmc.get_recently_added_movies()
             
             list = ""
-            data["movies"].each { |movie| list = list + movie["label"] + "\n" }
+            data["movies"].each { |movie| list = list + movie["label"] +"("+ movie["year"] +")"+ "\n" }
             say list, spoken: "Here are your recently added movies"
           end
           request_completed #always complete your request! Otherwise the phone will "spin" at the user!
@@ -199,7 +199,7 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 					    # send a "Preview" of the Tweet
 					    object = SiriAddViews.new
 					    object.make_root(last_ref_id)
-					    answer = SiriAnswer.new("\"#{movie["title"]}\"", [
+					    answer = SiriAnswer.new("\"#{movie["title"]} (#{movie["year"]})\"", [
 					      SiriAnswerLine.new('logo', imgUrl)
 					    ])
 					    object.views << SiriAnswerSnippet.new([answer])
@@ -267,7 +267,7 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 					    # send a "Preview" of the Tweet
 					    object = SiriAddViews.new
 					    object.make_root(last_ref_id)
-					    answer = SiriAnswer.new("\"#{movie["title"]}\"", [
+					    answer = SiriAnswer.new("\"#{movie["title"]} (#{movie["year"]})\"", [
 					      SiriAnswerLine.new('logo', imgUrl)
 					    ])
 					    object.views << SiriAnswerSnippet.new([answer])

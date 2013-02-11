@@ -89,9 +89,9 @@ class XBMCLibrary
     result = ""
     title = title.downcase.gsub(/[^0-9A-Za-z]/, '')
     if ($apiVersion["version"] == 2)
-      movies = xbmc('VideoLibrary.GetMovies', { :fields => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed", "thumbnail"] })["movies"]
+      movies = xbmc('VideoLibrary.GetMovies', { :fields => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed", "thumbnail", "fanart"] })["movies"]
     else
-      movies = xbmc('VideoLibrary.GetMovies', { :properties => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed", "thumbnail"] })["movies"]
+      movies = xbmc('VideoLibrary.GetMovies', { :properties => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed", "thumbnail", "fanart"] })["movies"]
     end
     movies.each { |movie|
       movietitle = movie["label"].downcase.gsub(/[^0-9A-Za-z]/, '')
@@ -124,9 +124,9 @@ class XBMCLibrary
     puts "[#{@appname}] Looking up first unwatched episode (API version #{$apiVersion["version"]})"
     result = ""
     if ($apiVersion["version"] == 2)
-      episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :fields => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file", "thumbnail"] } )["episodes"]
+      episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :fields => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file", "thumbnail", "fanart"] } )["episodes"]
     else  
-      episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :properties => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file", "thumbnail"] } )["episodes"]
+      episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :properties => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file", "thumbnail", "fanart"] } )["episodes"]
     end
     episodes.each { |episode|
       if (episode["playcount"] == 0)
@@ -141,7 +141,7 @@ class XBMCLibrary
     result = ""
     
     if ($apiVersion["version"] == 2)
-      season_path = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :fields => ["file"] } )['episodes']
+      season_path = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :fields => ["file", "thumbnail", "fanart"] } )['episodes']
       if season_path
         season_path = season_path.first['file'].split('/')
         season_path.pop
@@ -150,7 +150,7 @@ class XBMCLibrary
         raise "You don't have that Season"
       end
     else
-      season_path = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :properties => ["file"] } )['episodes']
+      season_path = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :properties => ["file", "thumbnail", "fanart"] } )['episodes']
       if season_path
         season_path = season_path.first['file'].split('/')
         season_path.pop
@@ -228,9 +228,9 @@ class XBMCLibrary
   def find_episode(tvshowid, season_number, episode_number)
     result = ""
     if ($apiVersion["version"] == 2)
-      episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :fields => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file", "thumbnail"] } )["episodes"]
+      episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :fields => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file", "thumbnail", "fanart"] } )["episodes"]
     else  
-      episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :properties => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file", "thumbnail"] } )["episodes"]
+      episodes = xbmc('VideoLibrary.GetEpisodes', { :tvshowid => tvshowid, :season => season_number, :properties => ["title", "showtitle", "season", "episode", "runtime", "playcount", "rating", "file", "thumbnail", "fanart"] } )["episodes"]
     end
     
     episode_number = episode_number.to_s
@@ -245,25 +245,25 @@ class XBMCLibrary
   
   def show_movies
     result = "" 
-    movies = xbmc('VideoLibrary.GetRecentlyAddedMovies', { :limits => 10, :properties => ["title", "rating", "thumbnail"] } )["movies"]
+    movies = xbmc('VideoLibrary.GetRecentlyAddedMovies', { :limits => 10, :properties => ["title", "year", "rating", "thumbnail", "fanart"] } )["movies"]
     return movies
     return result
   end
   
   def get_recently_added_episodes()
-    return xbmc('VideoLibrary.GetRecentlyAddedEpisodes')
+    return xbmc('VideoLibrary.GetRecentlyAddedEpisodes', { :limits => 10, :properties => ["title", "rating", "thumbnail", "fanart"] } )
   end
   
   def get_recently_added_movies()
-    return xbmc('VideoLibrary.GetRecentlyAddedMovies')
+    return xbmc('VideoLibrary.GetRecentlyAddedMovies', { :limits => 10, :properties => ["title", "year", "rating", "thumbnail", "fanart"] } )
   end
   
   def get_tv_shows()
-    return xbmc('VideoLibrary.GetTVShows')
+    return xbmc('VideoLibrary.GetTVShows', { :limits => 10, :properties => ["title", "rating", "thumbnail", "fanart"] } )
   end
   
   def get_episode(id)
-    return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :properties => ['tvshowid', 'thumbnail'] })
+    return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :properties => ['tvshowid', 'thumbnail', 'fanart'] })
   end
   
 end
