@@ -11,16 +11,16 @@ What I want is to get the most functionallity out of XBMC as possible. If
 you want some stuff added, ask!? djxfma@gmail.com
 
 Here are the changes:
--. Cleaned the code
--. Support for XBMC Frodo v12 (simple; adding header-content for JSON)
--. Added more funtionality from new updates from brainwave9
-   -. Recently added movies (say: "recent movies")
-   -. Recently added episodes (say: "recent episodes")
--. Added functionality in library to support Thumbnail, Fanart and Year.
--. Added code so that it will Display Image from the Now playing Movie or Episode.
-   -. Now playing Movie with thumbnail (say: "watch The Impossible")
-   -. Now playing Episode with thumbnail (say: "watch Dexter Season 2 Episode 1")
-   -. Also listens to What's instead of Whatch..
+	-. Cleaned the code
+	-. Support for XBMC Frodo v12 (simple; adding header-content for JSON)
+	-. Added more funtionality from new updates from brainwave9
+	   -. Recently added movies (say: "recent movies")
+	   -. Recently added episodes (say: "recent episodes")
+	-. Added functionality in library to support Thumbnail, Fanart and Year.
+	-. Added code so that it will Display Image from the Now playing Movie or Episode.
+	   -. Now playing Movie with thumbnail (say: "watch The Impossible")
+	   -. Now playing Episode with thumbnail (say: "watch Dexter Season 2 Episode 1")
+	   -. Also listens to What's instead of Whatch..
 
 
 About
