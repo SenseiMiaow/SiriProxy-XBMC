@@ -30,6 +30,7 @@ require 'chronic'
 ######
 
 class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
+	
 	def initialize(config)
 		appname = "SiriProxy-XBMC"
 		@host = config["xbmc_host"]
@@ -48,7 +49,8 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 
 		@xbmc = XBMCLibrary.new(@roomlist, appname)
 	end
-
+	
+	
 	#show plugin status
 	listen_for /[xX] *[bB] *[mM] *[cC] *(.*)/i do |roomname|
 		roomname = roomname.downcase.strip
@@ -80,7 +82,8 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		end
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
-
+	
+	
 	# stop playing
 	listen_for /^stop/i do 
 		if (@xbmc.connect(@active_room))
@@ -92,7 +95,8 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		end
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
-
+	
+	
 	# pause playing
 	listen_for /^pause/i do 
 		if (@xbmc.connect(@active_room))
@@ -104,7 +108,8 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		end
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
-
+	
+	
 	# resume playing
 	listen_for /^resume|unpause|continue/i do 
 		if (@xbmc.connect(@active_room))
@@ -116,8 +121,19 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		end
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
-
-
+	
+	
+	# now playing
+	listen_for /now.*playing/i do
+	  if (@xbmc.connect(@active_room))
+		data = @xbmc.get_now_playing()
+		
+		say data["title"], spoken: "Now playing"
+	  end
+	  request_completed #always complete your request! Otherwise the phone will "spin" at the user!
+	end
+	
+	
 	# set default room
 	# set default room
 	listen_for /(?:(?:[Ii]'m in)|(?:[Ii] am in)|(?:[Uu]se)|(?:[Cc]ontrol)) the (.*)/i do |roomname|
@@ -130,8 +146,8 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		end
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
-
-
+	
+	
 	#update library
         listen_for /^update my library/i do 
 		if (@xbmc.connect(@active_room))
@@ -140,38 +156,41 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
 	
-        # recently added movies
-        listen_for /recent.*movies/i do
-          if (@xbmc.connect(@active_room))
-            data = @xbmc.get_recently_added_movies()
-            
-            list = ""
-            data["movies"].each { |movie| list = list + movie["label"] + "\n" }
-            say list, spoken: "Here are your recently added movies"
-          end
-          request_completed #always complete your request! Otherwise the phone will "spin" at the user!
-        end
-
-        # recently added episodes
-        listen_for /recent.*episodes/i do 
-          if (@xbmc.connect(@active_room))
-            data = @xbmc.get_recently_added_episodes()
-            shows = {}
-            tvdata = @xbmc.get_tv_shows()
-            tvdata["tvshows"].each do |show|
-              shows[show["tvshowid"]] = show["label"]
-            end
-            
-            list = ""
-            data["episodes"].each do |episode|
-	      episode_data = @xbmc.get_episode(episode["episodeid"])
-              list = list + shows[episode_data["episodedetails"]["tvshowid"]] + ": " + episode["label"] + "\n"
-            end
-            say list, spoken: "Here are your recently added TV episodes"
-          end
-          request_completed #always complete your request! Otherwise the phone will "spin" at the user!
-        end
-        
+	
+	# recently added movies
+	listen_for /recent.*movies/i do
+	  if (@xbmc.connect(@active_room))
+		data = @xbmc.get_recently_added_movies()
+		
+		list = ""
+		data["movies"].each { |movie| list = list + movie["label"] + "\n" }
+		say list, spoken: "Here are your recently added movies"
+	  end
+	  request_completed #always complete your request! Otherwise the phone will "spin" at the user!
+	end
+	
+	
+	# recently added episodes
+	listen_for /recent.*episodes/i do 
+	  if (@xbmc.connect(@active_room))
+		data = @xbmc.get_recently_added_episodes()
+		shows = {}
+		tvdata = @xbmc.get_tv_shows()
+		tvdata["tvshows"].each do |show|
+		  shows[show["tvshowid"]] = show["label"]
+		end
+		
+		list = ""
+		data["episodes"].each do |episode|
+		  episode_data = @xbmc.get_episode(episode["episodeid"])
+		  list = list + shows[episode_data["episodedetails"]["tvshowid"]] + ": " + episode["label"] + "\n"
+		end
+		say list, spoken: "Here are your recently added TV episodes"
+	  end
+	  request_completed #always complete your request! Otherwise the phone will "spin" at the user!
+	end
+	
+	
 	#play movie or episode
 	listen_for /watch (.+?)(?: in the (.*))?$/i do |title,roomname|
 		if (roomname == "" || roomname == nil)
@@ -262,10 +281,10 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		end
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
-
-
+	
+	
 	#play movie or episode
-	listen_for /what's (.+?)(?: in the (.*))?$/i do |title,roomname|
+	listen_for /(?:(?:watch)|(?:what's)) (.+?)(?: in the (.*))?$/i do |title,roomname|
 		if (roomname == "" || roomname == nil)
 			roomname = @active_room
 		else
@@ -354,7 +373,6 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 		end
 		request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
-
-
-
+	
+	
 end

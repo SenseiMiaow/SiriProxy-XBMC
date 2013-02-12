@@ -7,10 +7,12 @@ class XBMCLibrary
   
   include HTTParty
   
+  
   def initialize(serverlist, appname)
     @xbmc = serverlist
     @appname = appname
   end
+  
   
   def set_xbmc_config(location="default")
     if (!@xbmc.has_key?(location) || !@xbmc[location].has_key?("host") || !@xbmc[location]["host"] == "")
@@ -24,12 +26,14 @@ class XBMCLibrary
     return true
   end
   
+  
   # API interaction: Invokes the given method with given params, parses the JSON response body, maps it to
   # a HashWithIndifferentAccess and returns the :result subcollection
   def xbmc(method, params={})
     JSON.parse(invoke_json_method(method, params).body).with_indifferent_access[:result]
   end
-    
+  
+  
   # Raw API interaction: Invoke the given JSON RPC Api call and return the raw response (which is an instance of
   # HTTParty::Response)
   def invoke_json_method(method, params={})
@@ -42,9 +46,11 @@ class XBMCLibrary
     raise err.class, err.message + ". Did you configure the url and port for XBMC properly using Xbmc.base_uri 'http://localhost:1234'?"
   end
   
+  
   def test()
     return xbmc('VideoLibrary.GetRecentlyAddedMovies')
   end
+  
   
   def connect(location)
     puts "[#{@appname}] Connecting to the XBMC interface (#{location})"
@@ -67,6 +73,7 @@ class XBMCLibrary
     return $apiLoaded
   end
   
+  
   def get_video_player()
     puts "[#{@appname}] Get active video player (API version #{$apiVersion["version"]})"
     result = ""
@@ -83,6 +90,7 @@ class XBMCLibrary
     end
     return result
   end
+  
   
   def find_movie(title)
     puts "[#{@appname}] Finding movie (API version #{$apiVersion["version"]})"
@@ -102,6 +110,7 @@ class XBMCLibrary
     return result
   end
   
+  
   def find_show(title)
     puts "[#{@appname}] Finding #{title} (API version #{$apiVersion["version"]})"
     result = ""
@@ -120,6 +129,7 @@ class XBMCLibrary
     return result
   end
   
+  
   def find_first_unwatched_episode(tvshowid)
     puts "[#{@appname}] Looking up first unwatched episode (API version #{$apiVersion["version"]})"
     result = ""
@@ -135,6 +145,7 @@ class XBMCLibrary
     }
     return result
   end
+  
   
   def play_season(tvshowid, season_number)
     puts "[#{@appname}] Looking up the path for season #{season_number} of #{tvshowid} (API version #{$apiVersion["version"]})"
@@ -176,6 +187,7 @@ class XBMCLibrary
     end
   end
   
+  
   def play(file)
     puts "[#{@appname}] Playing file (API version #{$apiVersion["version"]})"
     begin
@@ -192,6 +204,7 @@ class XBMCLibrary
     end
   end
   
+  
   def stop()
     player = get_video_player()
     if (player != "")
@@ -205,6 +218,7 @@ class XBMCLibrary
     end
     return false
   end
+  
   
   def pause()
     player = get_video_player()
@@ -220,10 +234,26 @@ class XBMCLibrary
     return false
   end
   
+  
+  def get_now_playing()
+    result = ""
+	player = get_video_player()
+    if (player != "")
+		if ($apiVersion["version"] == 2)
+			return xbmc('Player.GetItem', { :playerid => player })
+		else
+			return xbmc('Player.GetItem', { :playerid => player })
+		end
+	end
+	return result
+  end
+  
+  
   def update_library
     xbmc('VideoLibrary.Scan')
     return true
   end
+  
   
   def find_episode(tvshowid, season_number, episode_number)
     result = ""
@@ -243,17 +273,21 @@ class XBMCLibrary
     return result
   end
   
+  
   def get_recently_added_episodes()
     return xbmc('VideoLibrary.GetRecentlyAddedEpisodes')
   end
+  
   
   def get_recently_added_movies()
 	return xbmc('VideoLibrary.GetRecentlyAddedMovies')
   end
   
+  
   def get_tv_shows()
     return xbmc('VideoLibrary.GetTVShows')
   end
+  
   
   def get_episode(id)
     if ($apiVersion["version"] == 2)
@@ -263,6 +297,7 @@ class XBMCLibrary
 	end
   end
   
+  
   def get_movie(id)
     if ($apiVersion["version"] == 2)
       return xbmc('VideoLibrary.GetMovies', { :movieid => id, :fields => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed", "thumbnail", "fanart"] })
@@ -270,5 +305,6 @@ class XBMCLibrary
       return xbmc('VideoLibrary.GetMovies', { :movieid => id, :properties => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed", "thumbnail", "fanart"] })
     end
   end
+  
   
 end
