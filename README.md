@@ -1,6 +1,28 @@
 SiriProxy-XBMC
 ==============
 
+Changes (DJXFMA)
+----------------
+This plugin was originally created by branwave9 and then forked by
+patrickkettner and after that forked by me. I checked every fork out there
+and was most pleaced by the code in this fork.
+
+What I want is to get the most functionallity out of XBMC as possible. If
+you want some stuff added, ask!? djxfma@gmail.com
+
+Here are the changes:
+-. Cleaned the code
+-. Support for XBMC Frodo v12 (simple; adding header-content for JSON)
+-. Added more funtionality from new updates from brainwave9
+   -. Recently added movies (say: "recent movies")
+   -. Recently added episodes (say: "recent episodes")
+-. Added functionality in library to support Thumbnail, Fanart and Year.
+-. Added code so that it will Display Image from the Now playing Movie or Episode.
+   -. Now playing Movie with thumbnail (say: "watch The Impossible")
+   -. Now playing Episode with thumbnail (say: "watch Dexter Season 2 Episode 1")
+   -. Also listens to What's instead of Whatch..
+
+
 About
 -----
 SiriProxy-XBMC is a [Siri Proxy](https://github.com/plamoni/SiriProxy) plugin that allows you to send commands to [XBMC](http://www.xbmc.org).
@@ -21,11 +43,11 @@ Installation
 To install SiriProxy-XBMC, add the following to your Siri Proxy config.yml file (~/.siriproxy/config.yml):
 
     - name: 'XBMC'
-      git: 'git://github.com/brainwave9/SiriProxy-XBMC.git'
-      xbmc_host: '192.168.1.4' #Internal IP address of your computer running XBMC.
-      xbmc_port: 8080          #Port that the XBMC interface listens to.
-      xbmc_username: 'xbmc'    #Username as specified in XBMC
-      xbmc_password: 'xbmc'    #password as specified in XBMC
+      git: 'git://github.com/DJXFMA/SiriProxy-XBMC.git'
+      xbmc_host: '192.168.0.182'	#Internal IP address of your computer running XBMC.
+      xbmc_port: 8080          		#Port that the XBMC interface listens to.
+      xbmc_username: 'xbmc'    		#Username as specified in XBMC
+      xbmc_password: 'xbmc'    		#password as specified in XBMC
 
 Stop Siri Proxy (CTRL-C if it's running in the foreground or `killall siriproxy` if it's running in the background)
 

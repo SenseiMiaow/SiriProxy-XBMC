@@ -5,9 +5,8 @@
 ##########################
     
     - name: 'XBMC'
-      git: 'git://github.com/brainwave9/SiriProxy-XBMC.git'
-      xbmc_host: '10.0.1.75' #Internal IP address of your computer running XBMC.
-      xbmc_port: 8080 #Port that the XBMC interface listens to.
-      xbmc_username: 'xbmc'
-      xbmc_password: 'xbmc'
-
+      git: 'git://github.com/DJXFMA/SiriProxy-XBMC.git'
+      xbmc_host: '192.168.0.182'	#Internal IP address of your computer running XBMC.
+      xbmc_port: 8080 			#Port that the XBMC interface listens to.
+      xbmc_username: 'xbmc'		#Username XBMC
+      xbmc_password: ''			#Password XBMC
