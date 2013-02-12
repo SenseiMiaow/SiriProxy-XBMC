@@ -12,16 +12,15 @@ you want some stuff added, ask!? djxfma@gmail.com
 
 Here are the changes:
 
-   Cleaned the code
-   Support for XBMC Frodo v12 (simple; adding header-content for JSON)
-   Added more funtionality from new updates from brainwave9
-      Recently added movies (say: "recent movies")
-      Recently added episodes (say: "recent episodes")
-   Added functionality in library to support Thumbnail, Fanart and Year.
-   Added code so that it will Display Image from the Now playing Movie or Episode.
-      Now playing Movie with thumbnail (say: "watch The Impossible")
-      Now playing Episode with thumbnail (say: "watch Dexter Season 2 Episode 1")
-      Also listens to What's instead of Whatch..
+    cleaned the code:
+    support for XBMC Frodo v12:
+    added more functionality from updates from brainwave9:
+	  Recently added movies: say "recent movies"
+	  Recently added episodes: say "recent episodes"
+    added functionality in library to support Thumbnail, Fanart and Year:
+    added code so that it will Display the Thumbnail from the Now playing Movie or Episode:
+      Now playing Movie with thumbnail: say "watch/what's The Impossible"
+      Now playing Episode with thumbnail: say "watch/what's Dexter Season 2 Episode 1"
 
 About
 -----
