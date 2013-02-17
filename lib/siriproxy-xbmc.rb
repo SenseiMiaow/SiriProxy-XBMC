@@ -18,6 +18,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+
+######
+#  
+#  Modified by: DJXFMA
+#  Added: Many new features, and better advanced output with image.
+#  
+######
+
+
 require 'cgi'
 require 'cora'
 require 'siri_objects'
@@ -126,9 +135,64 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 	# now playing
 	listen_for /now.*playing/i do
 	  if (@xbmc.connect(@active_room))
-		data = @xbmc.get_now_playing()
+		data = @xbmc.get_now_playing()["item"]
 		
-		say data["title"], spoken: "Now playing"
+		#movie playing
+		if(data["type"] == "movie")
+			movie = @xbmc.get_movie(data["id"].to_i)["moviedetails"]
+			
+			#say
+			say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
+			
+			#genres
+			genres = ""
+			movie["genre"].each do |genre|
+				genres = "#{genre}, " + genres
+			end
+			
+			#moviedetails
+			encImgUrl = CGI.escape(movie["thumbnail"])
+			imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
+			@answers = []
+			@answers << SiriAnswer.new(
+				"\"#{movie["title"]} (#{movie["year"]})\"",[
+					SiriAnswerLine.new("#{genres}"),
+					SiriAnswerLine.new('image', imgUrl)
+				]
+			)
+			
+			#send object
+			object = SiriAddViews.new
+			object.make_root(last_ref_id)
+			object.views << SiriAnswerSnippet.new(@answers)
+			send_object object
+			
+			
+		#episode playing
+		elsif(data["type"] == "episode")
+			episode = @xbmc.get_episode(data["id"].to_i)["episodedetails"]
+			
+			#say
+			say "Now playing \"#{episode["title"]}\" (#{episode["showtitle"]}, Season #{episode["season"]}, Episode #{episode["episode"]})", spoken: "Now playing \"#{episode["title"]}\""
+			
+			#episodedetails
+			encImgUrl = CGI.escape(episode["thumbnail"])
+			imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
+			@answers = []
+			@answers << SiriAnswer.new(
+				"#{episode["title"]}",[
+					SiriAnswerLine.new("#{episode["showtitle"]}, Season #{episode["season"]}, Episode #{episode["episode"]}"),
+					SiriAnswerLine.new('image', imgUrl)
+				]
+			)
+			
+			#send object
+			object = SiriAddViews.new
+			object.make_root(last_ref_id)
+			object.views << SiriAnswerSnippet.new(@answers)
+			send_object object
+			
+		end
 	  end
 	  request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
@@ -160,11 +224,40 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 	# recently added movies
 	listen_for /recent.*movies/i do
 	  if (@xbmc.connect(@active_room))
-		data = @xbmc.get_recently_added_movies()
+		movies = @xbmc.get_recently_added_movies()["movies"]
 		
-		list = ""
-		data["movies"].each { |movie| list = list + movie["label"] + "\n" }
-		say list, spoken: "Here are your recently added movies"
+		#movies
+		@answers = []
+		movies.each do |movie|
+			movie = @xbmc.get_movie(movie["movieid"].to_i)["moviedetails"]
+			
+			#genres
+			genres = ""
+			movie["genre"].each do |genre|
+				genres = "#{genre}, " + genres
+			end
+			
+			#moviedetails
+			encImgUrl = CGI.escape(movie["thumbnail"])
+			imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
+			@answers << SiriAnswer.new(
+				"\"#{movie["title"]} (#{movie["year"]})\"",[
+					SiriAnswerLine.new("#{genres}"),
+					SiriAnswerLine.new('image', imgUrl)
+				]
+			)
+			
+		end
+		
+		#say
+		say "Here are your recently added movies"
+		
+		#send object
+		object = SiriAddViews.new
+		object.make_root(last_ref_id)
+		object.views << SiriAnswerSnippet.new(@answers)
+		send_object object
+		
 	  end
 	  request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
@@ -173,19 +266,34 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 	# recently added episodes
 	listen_for /recent.*episodes/i do 
 	  if (@xbmc.connect(@active_room))
-		data = @xbmc.get_recently_added_episodes()
-		shows = {}
-		tvdata = @xbmc.get_tv_shows()
-		tvdata["tvshows"].each do |show|
-		  shows[show["tvshowid"]] = show["label"]
+		episodes = @xbmc.get_recently_added_episodes()["episodes"]
+		
+		#episodes
+		@answers = []
+		episodes.each do |episode|
+			episode = @xbmc.get_episode(episode["episodeid"].to_i)["episodedetails"]
+			
+			#episodedetails
+			encImgUrl = CGI.escape(episode["thumbnail"])
+			imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
+			@answers << SiriAnswer.new(
+				"#{episode["title"]}",[
+					SiriAnswerLine.new("#{episode["showtitle"]}, Season #{episode["season"]}, Episode #{episode["episode"]}"),
+					SiriAnswerLine.new('image', imgUrl)
+				]
+			)
+			
 		end
 		
-		list = ""
-		data["episodes"].each do |episode|
-		  episode_data = @xbmc.get_episode(episode["episodeid"])
-		  list = list + shows[episode_data["episodedetails"]["tvshowid"]] + ": " + episode["label"] + "\n"
-		end
-		say list, spoken: "Here are your recently added TV episodes"
+		#say
+		say "Here are your recently added TV episodes"
+		
+		#send object
+		object = SiriAddViews.new
+		object.make_root(last_ref_id)
+		object.views << SiriAnswerSnippet.new(@answers)
+		send_object object
+		
 	  end
 	  request_completed #always complete your request! Otherwise the phone will "spin" at the user!
 	end
@@ -212,13 +320,20 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 				else
 					say "Now playing \"#{movie["title"]}\"", spoken: "Now playing \"#{movie["title"]}\""
 					
+					#genres
+					genres = ""
+					movie["genre"].each do |genre|
+						genres = "#{genre}, " + genres
+					end
+					
 					#Now playing Movie with Thumbnail
 					encImgUrl = CGI.escape(movie["thumbnail"])
 					imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
 					    object = SiriAddViews.new
 					    object.make_root(last_ref_id)
 					    answer = SiriAnswer.new("\"#{movie["title"]} (#{movie["year"]})\"", [
-					      SiriAnswerLine.new('logo', imgUrl)
+						  SiriAnswerLine.new("#{genres}"),
+						  SiriAnswerLine.new('logo', imgUrl)
 					    ])
 					    object.views << SiriAnswerSnippet.new([answer])
 					    send_object object
@@ -242,8 +357,9 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 						imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
 							object = SiriAddViews.new
 							object.make_root(last_ref_id)
-							answer = SiriAnswer.new("\"#{episod["title"]}\" (#{episod["showtitle"]}, Season #{episod["season"]}, Episode #{episod["episode"]})\"", [
-							  SiriAnswerLine.new('logo', imgUrl)
+							answer = SiriAnswer.new("#{episod["title"]}", [
+								SiriAnswerLine.new("#{episod["showtitle"]}, Season #{episod["season"]}, Episode #{episod["episode"]}"),
+								SiriAnswerLine.new('image', imgUrl)
 							])
 							object.views << SiriAnswerSnippet.new([answer])
 							send_object object
@@ -266,8 +382,9 @@ class SiriProxy::Plugin::XBMC < SiriProxy::Plugin
 						imgUrl = "http://#{@host}:#{@port}/image/" + encImgUrl
 							object = SiriAddViews.new
 							object.make_root(last_ref_id)
-							answer = SiriAnswer.new("\"#{episode["title"]}\" (#{episode["showtitle"]}, Season #{episode["season"]}, Episode #{episode["episode"]})\"", [
-							  SiriAnswerLine.new('logo', imgUrl)
+							answer = SiriAnswer.new("#{episode["title"]}", [
+								SiriAnswerLine.new("#{episode["showtitle"]}, Season #{episode["season"]}, Episode #{episode["episode"]}"),
+								SiriAnswerLine.new('image', imgUrl)
 							])
 							object.views << SiriAnswerSnippet.new([answer])
 							send_object object

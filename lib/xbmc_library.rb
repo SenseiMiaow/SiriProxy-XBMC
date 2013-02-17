@@ -239,11 +239,7 @@ class XBMCLibrary
     result = ""
 	player = get_video_player()
     if (player != "")
-		if ($apiVersion["version"] == 2)
-			return xbmc('Player.GetItem', { :playerid => player })
-		else
-			return xbmc('Player.GetItem', { :playerid => player })
-		end
+		return xbmc('Player.GetItem', { :playerid => player })
 	end
 	return result
   end
@@ -289,20 +285,29 @@ class XBMCLibrary
   end
   
   
+  def get_tvshow(id)
+    if ($apiVersion["version"] == 2)
+		return xbmc('VideoLibrary.GetTVShowDetails', { :tvshowid => id, :fields => ["title", "rating", "thumbnail"] })
+	else
+		return xbmc('VideoLibrary.GetTVShowDetails', { :tvshowid => id, :properties => ["title", "rating", "thumbnail"] })
+	end
+  end
+  
+  
   def get_episode(id)
     if ($apiVersion["version"] == 2)
-		return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :fields => ['tvshowid'] })
+		return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :fields => ["tvshowid", "title", "rating", "showtitle", "season", "episode", "thumbnail"] })
 	else
-		return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :properties => ['tvshowid'] })
+		return xbmc('VideoLibrary.GetEpisodeDetails', { :episodeid => id, :properties => ["tvshowid", "title", "rating", "showtitle", "season", "episode", "thumbnail"] })
 	end
   end
   
   
   def get_movie(id)
     if ($apiVersion["version"] == 2)
-      return xbmc('VideoLibrary.GetMovies', { :movieid => id, :fields => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed", "thumbnail", "fanart"] })
+      return xbmc('VideoLibrary.GetMovieDetails', { :movieid => id, :fields => ["genre", "director", "title", "runtime", "year", "playcount", "rating", "thumbnail", "fanart"] })
     else
-      return xbmc('VideoLibrary.GetMovies', { :movieid => id, :properties => ["file", "genre", "director", "title", "originaltitle", "runtime", "year", "playcount", "rating", "lastplayed", "thumbnail", "fanart"] })
+      return xbmc('VideoLibrary.GetMovieDetails', { :movieid => id, :properties => ["genre", "director", "title", "runtime", "year", "playcount", "rating", "thumbnail", "fanart"] })
     end
   end
   

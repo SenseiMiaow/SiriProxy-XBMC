@@ -12,6 +12,15 @@ you want some stuff added, ask!? djxfma@gmail.com
 
 Here are the changes:
 
+**UPDATE**
+    "now playing" shows current played item episode/movie
+    layout changed for movies and episodes
+    thumbnail support for:
+      "recent movies"
+      "recent episodes"
+      "now playing"
+    
+**OLD**
     cleaned the code:
     support for XBMC Frodo v12:
     added more functionality from updates from brainwave9:
