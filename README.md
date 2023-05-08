@@ -1,14 +1,11 @@
 SiriProxy-XBMC
 ==============
 
-Changes (DJXFMA)
+Changes (SenseiMiaow)
 ----------------
 This plugin was originally created by branwave9 and then forked by
 patrickkettner and after that forked by me. I checked every fork out there
 and was most pleaced by the code in this fork.
-
-What I want is to get the most functionallity out of XBMC as possible. If
-you want some stuff added, ask!? djxfma@gmail.com
 
 Here are the changes:
 
@@ -51,7 +48,7 @@ Installation
 To install SiriProxy-XBMC, add the following to your Siri Proxy config.yml file (~/.siriproxy/config.yml):
 
     - name: 'XBMC'
-      git: 'git://github.com/DJXFMA/SiriProxy-XBMC.git'
+      git: 'git://github.com/SenseiMiaow/SiriProxy-XBMC.git'
       xbmc_host: '192.168.0.182'	#Internal IP address of your computer running XBMC.
       xbmc_port: 8080          		#Port that the XBMC interface listens to.
       xbmc_username: 'xbmc'    		#Username as specified in XBMC
